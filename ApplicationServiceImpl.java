@@ -165,7 +165,8 @@ public class ApplicationServiceImpl implements ApplicationService{
                 services();
                 break;
             case '4':
-                //transfer();
+                transfer();
+                services();
                 break;
             case '5':
                 showBalance();
@@ -299,6 +300,53 @@ public class ApplicationServiceImpl implements ApplicationService{
         System.out.println("Logout successful. Returning to main menu...");
         run();
     }
+    private void transfer() {
+        if (loggedInAccount == null) {
+            System.out.println("You must be logged in to transfer money.");
+            return;
+        }
+
+        Scanner scanner = new Scanner(System.in);
+        AccountService accountService = new AccountServiceImpl();
+
+        System.out.println("Enter the username of the recipient:");
+        String recipientUsername = scanner.nextLine();
+
+        Account recipientAccount = accountService.findAccountByUsername(recipientUsername);
+        if (recipientAccount == null) {
+            System.out.println("Recipient account not found.");
+            return;
+        }
+
+        System.out.println("Enter the amount to transfer:");
+        double amount;
+        try {
+            amount = Double.parseDouble(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid amount. Please enter a valid number.");
+            return;
+        }
+
+        if (amount < 100 || amount > 8000) {
+            System.out.println("Transfer amount must be between 100 and 8000.");
+            return;
+        }
+
+        if (loggedInAccount.getBalance() < amount) {
+            System.out.println("Insufficient balance for transfer.");
+            return;
+        }
+
+        boolean success = accountService.transfer(loggedInAccount, recipientAccount, amount);
+
+        if (success) {
+            System.out.println("Transfer successful! You sent $" + amount + " to " + recipientUsername);
+            System.out.println("Your Balance now is $"+loggedInAccount.getBalance());
+        } else {
+            System.out.println("Transfer failed.");
+        }
+    }
+
 
 }
 
