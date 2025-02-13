@@ -42,6 +42,7 @@ public class ApplicationServiceImpl implements ApplicationService{
                 case 'd':
                     System.out.println("you are welcome.");
                     out =true;
+                    System.exit(0);
                     break;
 
                 default:
@@ -54,7 +55,6 @@ public class ApplicationServiceImpl implements ApplicationService{
         if (tries == 4) {
             System.out.println("Sorry, you've used all your tries , Try again later.");
         }
-        scanner.close();
 
     }
 
@@ -92,7 +92,7 @@ public class ApplicationServiceImpl implements ApplicationService{
         // 4.TODO   impl createAccount
         boolean isAccountCreated = accountService.createAccount(account);
         if (isAccountCreated) {
-            System.out.println("Account Created");
+
         } else {
             System.out.println("Account not Created Because There exist account with same user name");
         }
@@ -103,37 +103,46 @@ public class ApplicationServiceImpl implements ApplicationService{
 
     private void login() {
         Scanner scanner = new Scanner(System.in);
+        int tries = 0;
+        boolean loggedIn = false;
 
-        System.out.println("Please Enter User name");
-        String name = scanner.nextLine();
+        while (tries < 4 && !loggedIn) {
+            System.out.println("Please Enter User name:");
+            String name = scanner.nextLine();
 
-        System.out.println("Please Enter password");
-        String password = scanner.nextLine();
+            System.out.println("Please Enter password:");
+            String password = scanner.nextLine();
 
-        ValidationService validationService = new ValidationServiceImpl();
+            ValidationService validationService = new ValidationServiceImpl();
 
-        if (!validationService.validateUserName(name)) {
-            System.out.println("Invalid UserName");
-            return;
+            if (!validationService.validateUserName(name)) {
+                System.out.println("Invalid UserName.");
+            } else if (!validationService.validatePassword(password)) {
+                System.out.println("Invalid Password.");
+            } else {
+                AccountService accountService = new AccountServiceImpl();
+                Account account = new Account(name, password);
+
+                if (accountService.loginAccount(account)) {
+                    loggedInAccount = account;
+                    System.out.println("Login Success");
+                    loggedIn = true;
+                    services();  // Proceed to services after login
+                    return;  // Exit the method
+                } else {
+                    System.out.println("Account not Exist.");
+                }
+            }
+
+            tries++;
+            if (tries < 4) {
+                System.out.println("You have " + (4 - tries) + " attempt(s) left.");
+            } else {
+                System.out.println("Too many failed attempts. Try again later.");
+            }
         }
-
-        if (!validationService.validatePassword(password)) {
-            System.out.println("Invalid Password");
-            return;
-        }
-
-        AccountService accountService = new AccountServiceImpl();
-        Account account = new Account(name, password);
-
-        if (accountService.loginAccount(account)) {
-            loggedInAccount = account;
-            System.out.println("Login Success");
-            services();
-        } else {
-            System.out.println("Account not Exist");
-        }
-
     }
+
 
     private void services() {
 
@@ -153,15 +162,18 @@ public class ApplicationServiceImpl implements ApplicationService{
                 break;
             case '3':
                 showDetails();
+                services();
                 break;
             case '4':
                 //transfer();
                 break;
             case '5':
                 showBalance();
+                services();
                 break;
             case '6':
                 logout();
+                run();
                 break;
             case '7':
                 System.out.println("Exiting the application. Goodbye!");
@@ -241,8 +253,8 @@ public class ApplicationServiceImpl implements ApplicationService{
             return;
         }
 
-        if (amount <= 0) {
-            System.out.println("Withdrawal amount must be greater than zero.");
+        if (amount < 100 || amount > 8000) {
+            System.out.println("Withdrawal amount must be between $100 and $8000.");
             return;
         }
 
@@ -251,7 +263,7 @@ public class ApplicationServiceImpl implements ApplicationService{
             return;
         }
 
-        // ✅ Deduct amount from balance
+
         loggedInAccount.setBalance(loggedInAccount.getBalance() - amount);
         System.out.println("Withdrawal successful! New Balance: $" + loggedInAccount.getBalance());
     }
@@ -287,12 +299,6 @@ public class ApplicationServiceImpl implements ApplicationService{
         System.out.println("Logout successful. Returning to main menu...");
         run();
     }
-
-
-
-
-
-
 
 }
 
