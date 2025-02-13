@@ -34,12 +34,6 @@ public  class AccountServiceImpl implements AccountService {
 
         accounts.add(account);
         System.out.println("Account successfully created.");
-
-        System.out.println("Current accounts list:");
-        for (Account acc : accounts) {
-            System.out.println("Username: " + acc.getUserName());
-        }
-
         return true;
     }
 
@@ -130,13 +124,10 @@ public  class AccountServiceImpl implements AccountService {
             System.out.println("Checking account: " + acc.getUserName());
             if (acc.getUserName().equals(account.getUserName()) &&
                     acc.getPassword().equals(account.getPassword())) {
-
-                System.out.println("Login successful!");
                 return true;
             }
         }
 
-        System.out.println("Account not found.");
         return false;
     }
 
