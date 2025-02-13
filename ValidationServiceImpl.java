@@ -23,19 +23,37 @@ public class ValidationServiceImpl implements ValidationService {
 
     @Override
     public boolean validatePassword(String password) {
-        // TODO return true if password contain number , uppercaseChar, lowerCase char, size greater than or equal 6 and special char
-        if (password.length() < 6 ) {
-            System.out.println("Password must be at least6 characters long.");
+        // Check length
+        if (password.length() < 6) {
+            System.out.println("Password must be at least 6 characters long.");
             return false;
         }
-        if(password.contains("[a-z]+") && password.contains("[A-Z]+") && password.contains("[0-9]+") ){
-            System.out.println("Password must contain number , uppercaseChar, lowerCase char, size greater than or equal 6");
+
+        // Check for at least one lowercase letter
+        if (!password.matches(".*[a-z].*")) {
+            System.out.println("Password must contain at least one lowercase letter.");
             return false;
         }
-        if (password.matches("!^.*[@#$%,.?\":{}&*()|<>].*")) {
+
+        // Check for at least one uppercase letter
+        if (!password.matches(".*[A-Z].*")) {
+            System.out.println("Password must contain at least one uppercase letter.");
+            return false;
+        }
+
+        // Check for at least one digit
+        if (!password.matches(".*[0-9].*")) {
+            System.out.println("Password must contain at least one number.");
+            return false;
+        }
+
+        // Check for at least one special character
+        if (!password.matches(".*[_!@#$%^&*(),.?\":{}|<>].*")) {
             System.out.println("Password must contain at least one special character.");
             return false;
         }
-        return true;
+
+        return true; // If all conditions pass, the password is valid.
     }
+
 }
