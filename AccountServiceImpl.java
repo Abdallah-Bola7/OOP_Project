@@ -130,5 +130,26 @@ public  class AccountServiceImpl implements AccountService {
 
         return false;
     }
+    @Override
+    public boolean transfer(Account sender, Account recipient, double amount) {
+        if (sender.getBalance() < amount) {
+            return false;
+        }
+
+        sender.setBalance(sender.getBalance() - amount);
+        recipient.setBalance(recipient.getBalance() + amount);
+
+        return true;
+    }
+    @Override
+    public Account findAccountByUsername(String username) {
+        for (Account acc : accounts) {
+            if (acc.getUserName().equals(username)) {
+                return acc;
+            }
+        }
+        return null;
+    }
+
 
 }
